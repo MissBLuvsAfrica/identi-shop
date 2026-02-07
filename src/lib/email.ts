@@ -4,7 +4,19 @@ import type { OrderWithItems } from '@/types';
 import { formatPrice, formatDate } from './utils';
 import { ORDER_STATUS_LABELS, RETURNS_POLICY, SITE_NAME } from './constants';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy-load Resend client to avoid build errors when API key is missing
+let resendClient: Resend | null = null;
+
+function getResendClient(): Resend | null {
+  if (!process.env.RESEND_API_KEY) {
+    return null;
+  }
+  if (!resendClient) {
+    resendClient = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendClient;
+}
+
 const FROM_EMAIL = process.env.EMAIL_FROM || 'orders@identi.co.ke';
 
 // Logging helper
@@ -133,6 +145,11 @@ export async function sendOrderReceivedEmail(order: OrderWithItems): Promise<boo
   `;
 
   try {
+    const resend = getResendClient();
+    if (!resend) {
+      logEmail('sendOrderReceivedEmail:skipped', { orderNumber: order.orderNumber, reason: 'No API key configured' });
+      return false;
+    }
     await resend.emails.send({
       from: FROM_EMAIL,
       to: order.customerEmail,
@@ -186,6 +203,11 @@ export async function sendPaymentConfirmedEmail(order: OrderWithItems): Promise<
   `;
 
   try {
+    const resend = getResendClient();
+    if (!resend) {
+      logEmail('sendPaymentConfirmedEmail:skipped', { orderNumber: order.orderNumber, reason: 'No API key configured' });
+      return false;
+    }
     await resend.emails.send({
       from: FROM_EMAIL,
       to: order.customerEmail,
@@ -234,6 +256,11 @@ export async function sendOrderDeliveredEmail(order: OrderWithItems): Promise<bo
   `;
 
   try {
+    const resend = getResendClient();
+    if (!resend) {
+      logEmail('sendOrderDeliveredEmail:skipped', { orderNumber: order.orderNumber, reason: 'No API key configured' });
+      return false;
+    }
     await resend.emails.send({
       from: FROM_EMAIL,
       to: order.customerEmail,
