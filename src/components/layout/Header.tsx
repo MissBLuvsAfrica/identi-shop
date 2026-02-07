@@ -13,11 +13,11 @@ export function Header({ cartItemCount = 0 }: HeaderProps) {
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-40">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
+      <nav className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-14 sm:h-16 md:h-20">
           {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
-            <h1 className="text-2xl md:text-3xl font-light tracking-[0.3em]">{SITE_NAME}</h1>
+          <Link href="/" className="flex-shrink-0 touch-manipulation">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-light tracking-[0.2em] sm:tracking-[0.3em]">{SITE_NAME}</h1>
           </Link>
 
           {/* Desktop Navigation */}
@@ -34,10 +34,10 @@ export function Header({ cartItemCount = 0 }: HeaderProps) {
           </div>
 
           {/* Cart & Mobile Menu */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-1 sm:space-x-4">
             <Link
               href="/cart"
-              className="relative p-2 hover:bg-gray-100 transition-colors"
+              className="relative p-3 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="Shopping cart"
             >
               <svg
@@ -54,7 +54,7 @@ export function Header({ cartItemCount = 0 }: HeaderProps) {
                 />
               </svg>
               {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-black text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                <span className="absolute top-1 right-1 bg-black text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                   {cartItemCount}
                 </span>
               )}
@@ -63,7 +63,7 @@ export function Header({ cartItemCount = 0 }: HeaderProps) {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 hover:bg-gray-100 transition-colors"
+              className="md:hidden p-3 hover:bg-gray-100 active:bg-gray-200 transition-colors touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
               aria-label="Toggle menu"
             >
               <svg
@@ -94,13 +94,13 @@ export function Header({ cartItemCount = 0 }: HeaderProps) {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-100">
-            <div className="flex flex-col space-y-4">
+          <div className="md:hidden py-2 border-t border-gray-100 animate-fade-in">
+            <div className="flex flex-col">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-sm tracking-wide hover:text-gray-600 transition-colors py-2"
+                  className="text-sm tracking-wide hover:text-gray-600 active:bg-gray-100 transition-colors py-4 px-2 touch-manipulation min-h-[48px] flex items-center"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.label}

@@ -4,25 +4,25 @@ import { SITE_NAME, FOOTER_LINKS, SOCIAL_LINKS, CONTACT_INFO } from '@/lib/const
 export function Footer() {
   return (
     <footer className="bg-black text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12">
           {/* Brand */}
-          <div className="md:col-span-1">
-            <h2 className="text-2xl font-light tracking-[0.3em] mb-4">{SITE_NAME}</h2>
-            <p className="text-gray-400 text-sm leading-relaxed">
+          <div className="col-span-2 md:col-span-1">
+            <h2 className="text-xl sm:text-2xl font-light tracking-[0.2em] sm:tracking-[0.3em] mb-3 sm:mb-4">{SITE_NAME}</h2>
+            <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
               Elevate your style with our curated collection of luxury handbags and shoes.
             </p>
           </div>
 
           {/* Shop Links */}
           <div>
-            <h3 className="text-sm font-medium tracking-wide mb-4">SHOP</h3>
-            <ul className="space-y-3">
+            <h3 className="text-xs sm:text-sm font-medium tracking-wide mb-3 sm:mb-4">SHOP</h3>
+            <ul className="space-y-2 sm:space-y-3">
               {FOOTER_LINKS.shop.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 text-sm hover:text-white transition-colors"
+                    className="text-gray-400 text-xs sm:text-sm hover:text-white active:text-white transition-colors touch-manipulation inline-block py-1"
                   >
                     {link.label}
                   </Link>
@@ -33,13 +33,13 @@ export function Footer() {
 
           {/* Support Links */}
           <div>
-            <h3 className="text-sm font-medium tracking-wide mb-4">SUPPORT</h3>
-            <ul className="space-y-3">
+            <h3 className="text-xs sm:text-sm font-medium tracking-wide mb-3 sm:mb-4">SUPPORT</h3>
+            <ul className="space-y-2 sm:space-y-3">
               {FOOTER_LINKS.support.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-gray-400 text-sm hover:text-white transition-colors"
+                    className="text-gray-400 text-xs sm:text-sm hover:text-white active:text-white transition-colors touch-manipulation inline-block py-1"
                   >
                     {link.label}
                   </Link>
@@ -49,21 +49,21 @@ export function Footer() {
           </div>
 
           {/* Contact */}
-          <div>
-            <h3 className="text-sm font-medium tracking-wide mb-4">CONTACT</h3>
-            <ul className="space-y-3 text-gray-400 text-sm">
-              <li>{CONTACT_INFO.email}</li>
-              <li>{CONTACT_INFO.phone}</li>
+          <div className="col-span-2 md:col-span-1">
+            <h3 className="text-xs sm:text-sm font-medium tracking-wide mb-3 sm:mb-4">CONTACT</h3>
+            <ul className="space-y-2 sm:space-y-3 text-gray-400 text-xs sm:text-sm">
+              <li><a href={`mailto:${CONTACT_INFO.email}`} className="hover:text-white touch-manipulation">{CONTACT_INFO.email}</a></li>
+              <li><a href={`tel:${CONTACT_INFO.phone.replace(/\s/g, '')}`} className="hover:text-white touch-manipulation">{CONTACT_INFO.phone}</a></li>
               <li>{CONTACT_INFO.address}</li>
             </ul>
 
             {/* Social Links */}
-            <div className="flex space-x-4 mt-6">
+            <div className="flex space-x-2 mt-4 sm:mt-6">
               <a
                 href={SOCIAL_LINKS.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-white active:text-white transition-colors p-2 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Instagram"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -74,7 +74,7 @@ export function Footer() {
                 href={SOCIAL_LINKS.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-white active:text-white transition-colors p-2 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Facebook"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -85,7 +85,7 @@ export function Footer() {
                 href={SOCIAL_LINKS.twitter}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-400 hover:text-white active:text-white transition-colors p-2 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Twitter"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -97,17 +97,17 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-gray-800 mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-gray-400 text-sm">
+        <div className="border-t border-gray-800 mt-8 sm:mt-12 pt-6 sm:pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
+            <p className="text-gray-400 text-xs sm:text-sm">
               &copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
             </p>
-            <div className="flex space-x-6">
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
               {FOOTER_LINKS.legal.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="text-gray-400 text-sm hover:text-white transition-colors"
+                  className="text-gray-400 text-xs sm:text-sm hover:text-white active:text-white transition-colors touch-manipulation py-1"
                 >
                   {link.label}
                 </Link>

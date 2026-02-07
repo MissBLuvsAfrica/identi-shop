@@ -11,6 +11,22 @@ export const metadata: Metadata = {
   },
   description: 'Shop our curated collection of luxury handbags and shoes. Premium quality, timeless designs.',
   keywords: ['luxury handbags', 'designer shoes', 'Kenya fashion', 'premium accessories'],
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
+  themeColor: '#000000',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: SITE_NAME,
+  },
+  formatDetection: {
+    telephone: true,
+    email: true,
+  },
 };
 
 export default async function RootLayout({
