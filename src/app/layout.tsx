@@ -1,8 +1,16 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Header, Footer, WhatsAppButton } from '@/components/layout';
 import { getCartItemCount } from '@/lib/cart';
 import { SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants';
 import './globals.css';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: '#000000',
+};
 
 export const metadata: Metadata = {
   title: {
@@ -11,13 +19,6 @@ export const metadata: Metadata = {
   },
   description: 'Shop our curated collection of luxury handbags and shoes. Premium quality, timeless designs.',
   keywords: ['luxury handbags', 'designer shoes', 'Kenya fashion', 'premium accessories'],
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
-  themeColor: '#000000',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
