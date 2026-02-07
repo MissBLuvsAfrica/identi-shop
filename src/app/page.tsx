@@ -2,7 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getActiveProductsWithVariants } from '@/lib/sheets';
 import { ProductGrid } from '@/components/product';
-import { CATEGORIES, SITE_NAME, SITE_TAGLINE } from '@/lib/constants';
+import { CATEGORIES, SITE_NAME } from '@/lib/constants';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
@@ -19,20 +19,24 @@ export default async function HomePage() {
 
   return (
     <div>
-      {/* Hero Section */}
-      <section className="relative h-[80vh] bg-gray-100">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/40" />
-        <div className="absolute inset-0 flex items-center justify-center text-center text-white">
-          <div className="max-w-3xl px-4">
-            <h1 className="text-5xl md:text-7xl font-light tracking-[0.2em] mb-4">{SITE_NAME}</h1>
-            <p className="text-xl md:text-2xl font-light tracking-wide mb-8">{SITE_TAGLINE}</p>
-            <Link
-              href="/shop"
-              className="inline-block bg-white text-black px-10 py-4 text-sm tracking-widest hover:bg-gray-100 transition-colors"
-            >
-              SHOP NOW
-            </Link>
-          </div>
+      {/* Hero Section - Chanel-inspired full-screen */}
+      <section className="relative h-screen w-full overflow-hidden">
+        <Image
+          src="/images/hero.png"
+          alt="Idénti - Luxury Handbags and Shoes"
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+        <div className="absolute bottom-12 left-0 right-0 text-center">
+          <Link
+            href="/shop"
+            className="inline-block bg-white/95 text-black px-12 py-4 text-sm tracking-[0.25em] font-medium hover:bg-white transition-all duration-300 shadow-lg"
+          >
+            DISCOVER THE COLLECTION
+          </Link>
         </div>
       </section>
 
