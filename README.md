@@ -227,6 +227,18 @@ Generate a long random string for `ADMIN_SESSION_SECRET` (e.g. `openssl rand -ba
 
 ## Local Development
 
+**To see Admin login and all recent changes**, use the feature branch and run dev:
+
+```bash
+git checkout feature/admin-auth-and-contact
+npm install
+npm run dev
+```
+
+Then open **http://localhost:3000** in your browser. Use the **Admin** link in the footer (bottom of the page) or go directly to **http://localhost:3000/admin/login**.
+
+If the page doesn’t load, check that nothing else is using port 3000, or run `npm run dev -- -p 3001` and open http://localhost:3001.
+
 ```bash
 # Install dependencies
 npm install

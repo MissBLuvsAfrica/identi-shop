@@ -377,9 +377,9 @@ export async function deleteDeliveryLocation(locationKey: string): Promise<boole
 
 // Settings (key/value) - tab columns: key, value, updated_at
 export async function getSettingsRows(): Promise<SettingRow[]> {
-  const sheets = getGoogleSheetsClient();
-  const spreadsheetId = getSpreadsheetId();
   try {
+    const sheets = getGoogleSheetsClient();
+    const spreadsheetId = getSpreadsheetId();
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
       range: `${SHEETS.SETTINGS}!A2:C`,

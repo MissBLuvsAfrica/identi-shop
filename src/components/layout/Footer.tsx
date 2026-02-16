@@ -99,7 +99,7 @@ export function Footer({ contact }: FooterProps) {
             <p className="text-gray-400 text-xs sm:text-sm">
               &copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
             </p>
-            <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-6 items-center">
               {FOOTER_LINKS.legal.map((link) => (
                 <Link
                   key={link.href}
@@ -109,6 +109,12 @@ export function Footer({ contact }: FooterProps) {
                   {link.label}
                 </Link>
               ))}
+              <Link
+                href="/admin/login"
+                className="text-gray-500 text-xs sm:text-sm hover:text-white transition-colors touch-manipulation py-1"
+              >
+                Admin
+              </Link>
             </div>
           </div>
         </div>
