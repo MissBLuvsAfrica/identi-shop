@@ -11,10 +11,13 @@ export const metadata = {
 };
 
 export default async function CheckoutPage() {
-  const [cart, deliveryLocations] = await Promise.all([
-    getCart(),
-    getDeliveryLocations(),
-  ]);
+  const cart = await getCart();
+  let deliveryLocations: Awaited<ReturnType<typeof getDeliveryLocations>> = [];
+  try {
+    deliveryLocations = await getDeliveryLocations();
+  } catch {
+    // Build-time or Sheets/OpenSSL errors: proceed with empty locations
+  }
 
   if (cart.items.length === 0) {
     redirect('/cart');

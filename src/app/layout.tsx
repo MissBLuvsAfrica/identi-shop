@@ -5,6 +5,9 @@ import { getResolvedContact } from '@/lib/settings';
 import { SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants';
 import './globals.css';
 
+// Avoid calling Google Sheets at build time (prevents ERR_OSSL_UNSUPPORTED on Vercel)
+export const dynamic = 'force-dynamic';
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,

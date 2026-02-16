@@ -22,36 +22,55 @@ export interface ResolvedContact {
 /**
  * Fetch settings from Sheets and merge with defaults.
  * Cached with revalidateTag('settings').
+ * Returns DEFAULTS if Sheets is unavailable (e.g. build-time or ERR_OSSL).
  */
 export async function getSettings(): Promise<SiteSettings> {
-  const getCached = unstable_cache(
-    async () => {
-      const rows = await getSettingsRows();
-      return mergeSettingsWithDefaults(rows);
-    },
-    ['settings'],
-    { revalidate: 60, tags: [CACHE_TAG] }
-  );
-  return getCached();
+  try {
+    const getCached = unstable_cache(
+      async () => {
+        const rows = await getSettingsRows();
+        return mergeSettingsWithDefaults(rows);
+      },
+      ['settings'],
+      { revalidate: 60, tags: [CACHE_TAG] }
+    );
+    return await getCached();
+  } catch {
+    return DEFAULTS;
+  }
 }
 
 /**
  * Resolved contact + social for display (used by Footer, Contact page).
+ * Never throws: on Sheets/OpenSSL errors (e.g. Vercel build), returns defaults.
  */
 export async function getResolvedContact(): Promise<ResolvedContact> {
-  const s = await getSettings();
-  const instagramHandle = (s.instagram_handle || DEFAULTS.instagram_handle).replace(/^@/, '');
-  const tiktokHandle = (s.tiktok_handle || DEFAULTS.tiktok_handle).replace(/^@/, '');
-  return {
-    email: s.contact_email || DEFAULTS.contact_email,
-    phone: s.contact_phone_display || DEFAULTS.contact_phone_display,
-    phoneE164: s.contact_phone_e164 || DEFAULTS.contact_phone_e164,
-    address: CONTACT_INFO_DEFAULTS.address,
-    hours: CONTACT_INFO_DEFAULTS.hours,
-    instagramUrl: `https://instagram.com/${instagramHandle}`,
-    tiktokUrl: `https://tiktok.com/@${tiktokHandle}`,
-    whatsappE164: s.whatsapp_e164 || DEFAULTS.whatsapp_e164,
-  };
+  try {
+    const s = await getSettings();
+    const instagramHandle = (s.instagram_handle || DEFAULTS.instagram_handle).replace(/^@/, '');
+    const tiktokHandle = (s.tiktok_handle || DEFAULTS.tiktok_handle).replace(/^@/, '');
+    return {
+      email: s.contact_email || DEFAULTS.contact_email,
+      phone: s.contact_phone_display || DEFAULTS.contact_phone_display,
+      phoneE164: s.contact_phone_e164 || DEFAULTS.contact_phone_e164,
+      address: CONTACT_INFO_DEFAULTS.address,
+      hours: CONTACT_INFO_DEFAULTS.hours,
+      instagramUrl: `https://instagram.com/${instagramHandle}`,
+      tiktokUrl: `https://tiktok.com/@${tiktokHandle}`,
+      whatsappE164: s.whatsapp_e164 || DEFAULTS.whatsapp_e164,
+    };
+  } catch {
+    return {
+      email: DEFAULTS.contact_email,
+      phone: DEFAULTS.contact_phone_display,
+      phoneE164: DEFAULTS.contact_phone_e164,
+      address: CONTACT_INFO_DEFAULTS.address,
+      hours: CONTACT_INFO_DEFAULTS.hours,
+      instagramUrl: `https://instagram.com/${DEFAULTS.instagram_handle}`,
+      tiktokUrl: `https://tiktok.com/@${DEFAULTS.tiktok_handle}`,
+      whatsappE164: DEFAULTS.whatsapp_e164,
+    };
+  }
 }
 
 export { CACHE_TAG as SETTINGS_CACHE_TAG };
