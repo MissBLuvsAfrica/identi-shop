@@ -14,7 +14,13 @@ import {
   updateOrderStatus as updateOrderStatusLib,
   getOrderById,
   decrementStock,
+  upsertDeliveryLocation,
+  deleteDeliveryLocation,
+  setSettingRow,
 } from '@/lib/sheets';
+import { revalidateTag } from 'next/cache';
+import { SETTINGS_CACHE_TAG } from '@/lib/settings';
+import type { DeliveryLocation } from '@/types';
 import { sendPaymentConfirmedEmail, sendOrderDeliveredEmail } from '@/lib/email';
 import {
   adminLoginSchema,
@@ -279,5 +285,90 @@ export async function updateOrderStatusAction(
   } catch (error) {
     logAdmin('updateOrderStatus:error', { error: String(error) });
     return { success: false, error: 'Failed to update order status' };
+  }
+}
+
+// Delivery actions
+export async function upsertDeliveryAction(
+  formData: FormData
+): Promise<ApiResponse<DeliveryLocation>> {
+  await requireAuth();
+
+  try {
+    const location: DeliveryLocation = {
+      locationKey: (formData.get('locationKey') as string)?.trim() || '',
+      label: (formData.get('label') as string)?.trim() || '',
+      feeKes: parseFloat((formData.get('feeKes') as string) || '0') || 0,
+      etaDays: (formData.get('etaDays') as string)?.trim() || '',
+    };
+    if (!location.locationKey || !location.label) {
+      return { success: false, error: 'Location key and label are required' };
+    }
+    await upsertDeliveryLocation(location);
+    logAdmin('upsertDelivery', { locationKey: location.locationKey });
+    revalidatePath('/admin/delivery');
+    return { success: true, data: location };
+  } catch (error) {
+    logAdmin('upsertDelivery:error', { error: String(error) });
+    return { success: false, error: 'Failed to save delivery fee' };
+  }
+}
+
+export async function deleteDeliveryAction(
+  locationKey: string
+): Promise<ApiResponse<null>> {
+  await requireAuth();
+
+  try {
+    const ok = await deleteDeliveryLocation(locationKey);
+    if (!ok) return { success: false, error: 'Location not found' };
+    logAdmin('deleteDelivery', { locationKey });
+    revalidatePath('/admin/delivery');
+    return { success: true, data: null };
+  } catch (error) {
+    logAdmin('deleteDelivery:error', { error: String(error) });
+    return { success: false, error: 'Failed to delete' };
+  }
+}
+
+// Settings actions (safe keys only; no env exposure)
+const SETTING_KEYS = [
+  'contact_email',
+  'contact_phone_display',
+  'contact_phone_e164',
+  'instagram_handle',
+  'tiktok_handle',
+  'whatsapp_e164',
+  'payments_enabled',
+  'pay_on_delivery_enabled',
+  'payment_provider',
+  'checkout_whatsapp_template',
+] as const;
+
+export async function updateSettingsAction(
+  formData: FormData
+): Promise<ApiResponse<null>> {
+  await requireAuth();
+
+  try {
+    const booleanKeys = ['payments_enabled', 'pay_on_delivery_enabled'];
+    for (const key of SETTING_KEYS) {
+      const value = formData.get(key);
+      if (value === null || value === undefined) continue;
+      const str = String(value).trim();
+      if (booleanKeys.includes(key)) {
+        await setSettingRow(key, str === 'true' ? 'true' : 'false');
+      } else if (str !== '') {
+        await setSettingRow(key, str);
+      }
+    }
+    revalidateTag(SETTINGS_CACHE_TAG, 'max');
+    revalidatePath('/admin/settings');
+    revalidatePath('/');
+    logAdmin('updateSettings');
+    return { success: true, data: null };
+  } catch (error) {
+    logAdmin('updateSettings:error', { error: String(error) });
+    return { success: false, error: 'Failed to update settings' };
   }
 }

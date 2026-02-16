@@ -45,6 +45,18 @@ export default async function AdminLayout({
                   >
                     Orders
                   </Link>
+                  <Link
+                    href="/admin/delivery"
+                    className="text-gray-600 hover:text-black transition-colors"
+                  >
+                    Delivery
+                  </Link>
+                  <Link
+                    href="/admin/settings"
+                    className="text-gray-600 hover:text-black transition-colors"
+                  >
+                    Settings
+                  </Link>
                 </nav>
               </div>
               <div className="flex items-center space-x-4">

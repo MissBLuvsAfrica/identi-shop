@@ -53,12 +53,13 @@ GOOGLE_SHEETS_ID=<your-spreadsheet-id>
 APP_BASE_URL=http://localhost:3000
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 
-# WhatsApp
-WHATSAPP_E164=254700000000
+# WhatsApp (E164 without +, used for wa.me links)
+WHATSAPP_E164=254716610156
 
-# Admin Auth
+# Admin Auth (session is signed with jose; cookie httpOnly, 7 days)
 ADMIN_USER=admin
 ADMIN_PASS_HASH=<bcrypt-hashed-password>
+ADMIN_SESSION_SECRET=<long-random-string-at-least-32-chars>
 
 # Flutterwave Payment Gateway
 FLW_PUBLIC_KEY=FLWPUBK-xxxxxxxxxxxxxxx-X
@@ -191,6 +192,17 @@ OTHER | Other Locations | 700 | 5-7
 | unit_price_kes | number |
 | line_total_kes | number |
 
+#### `settings` Sheet (optional – for admin-editable site and payment toggles)
+
+Create a tab named **settings** with columns: `key`, `value`, `updated_at`. Supported keys (admin UI writes these):
+
+- `contact_email`, `contact_phone_display`, `contact_phone_e164`
+- `instagram_handle`, `tiktok_handle`, `whatsapp_e164`
+- `payments_enabled` (true/false), `pay_on_delivery_enabled` (true/false)
+- `payment_provider` (flutterwave|none), `checkout_whatsapp_template` (string)
+
+If the tab is missing or empty, the app uses defaults from `src/config/contact.ts`. API keys for payments stay in environment variables and are never exposed in the admin UI.
+
 ## Admin Password Setup
 
 Generate a bcrypt hash for your admin password:
@@ -203,6 +215,8 @@ console.log(hash);
 ```
 
 Or use an online bcrypt generator. Set the hash as `ADMIN_PASS_HASH`.
+
+Generate a long random string for `ADMIN_SESSION_SECRET` (e.g. `openssl rand -base64 32`). This is used to sign the admin session cookie; without it, admin login will fail.
 
 ## Flutterwave Setup
 
@@ -239,9 +253,42 @@ npm run format
 ## Deployment to Vercel
 
 1. Push your code to GitHub
-2. Connect the repository to Vercel
-3. Add all environment variables in Vercel dashboard
-4. Deploy
+2. Connect the repository to Vercel (e.g. **MissBLuvsAfrica/identi-shop**)
+3. Add all environment variables in Vercel (see below)
+4. Deploy (Preview from branch, Production from `main`)
+
+### Vercel environment variables
+
+Set these in **Vercel → Project → Settings → Environment Variables** for both **Preview** and **Production**:
+
+| Variable | Description |
+|----------|-------------|
+| `GOOGLE_SERVICE_ACCOUNT_JSON_BASE64` | Base64-encoded service account JSON |
+| `GOOGLE_SHEETS_ID` | Spreadsheet ID |
+| `APP_BASE_URL` | e.g. `https://your-app.vercel.app` (or custom domain) |
+| `NEXT_PUBLIC_APP_URL` | Same as `APP_BASE_URL` for client |
+| `WHATSAPP_E164` | `254716610156` (no `+`) |
+| `ADMIN_USER` | Admin username (e.g. `admin`) |
+| `ADMIN_PASS_HASH` | bcrypt hash of admin password (see "Admin Password Setup" above) |
+| `ADMIN_SESSION_SECRET` | Long random string (≥32 chars), e.g. `openssl rand -base64 32` |
+| `FLW_PUBLIC_KEY`, `FLW_SECRET_KEY`, `FLW_ENCRYPTION_KEY`, `FLW_WEBHOOK_HASH` | Flutterwave (if using payments) |
+| `RESEND_API_KEY`, `EMAIL_FROM` | Resend (if using email) |
+
+Without `ADMIN_SESSION_SECRET`, admin login will not work. Without `ADMIN_PASS_HASH`, no one can log in.
+
+### Push and deploy (run locally)
+
+```bash
+# 1. Push feature branch (test / Preview)
+git push -u origin feature/admin-auth-and-contact
+
+# 2. After CI and manual checks pass, merge to main (production)
+git checkout main
+git merge feature/admin-auth-and-contact
+git push origin main
+```
+
+Vercel will deploy **Preview** from `feature/admin-auth-and-contact` and **Production** from `main` once pushed.
 
 ### Production Checklist
 

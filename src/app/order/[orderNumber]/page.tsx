@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getOrderByNumber } from '@/lib/sheets';
 import { formatPrice, formatDateTime, generateWhatsAppLink } from '@/lib/utils';
 import { ORDER_STATUS_LABELS, ORDER_STATUS_COLORS, RETURNS_POLICY } from '@/lib/constants';
+import { WHATSAPP_E164_DEFAULT } from '@/config/contact';
 
 interface OrderPageProps {
   params: Promise<{ orderNumber: string }>;
@@ -30,7 +31,7 @@ export default async function OrderPage({ params }: OrderPageProps) {
     notFound();
   }
 
-  const whatsappPhone = process.env.WHATSAPP_E164 || '254700000000';
+  const whatsappPhone = process.env.WHATSAPP_E164 || WHATSAPP_E164_DEFAULT;
   const whatsappMessage = decodeURIComponent(order.whatsappPrefill);
   const whatsappLink = generateWhatsAppLink(whatsappPhone, whatsappMessage);
 

@@ -1,4 +1,5 @@
 import { SITE_NAME, RETURNS_POLICY } from '@/lib/constants';
+import { WHATSAPP_E164_DEFAULT } from '@/config/contact';
 
 export const metadata = {
   title: 'FAQs',
@@ -126,7 +127,7 @@ export default function FAQsPage() {
           We&apos;re here to help. Reach out to us on WhatsApp for immediate assistance.
         </p>
         <a
-          href={`https://wa.me/${process.env.WHATSAPP_E164 || '254700000000'}?text=Hi! I have a question.`}
+          href={`https://wa.me/${process.env.WHATSAPP_E164 || WHATSAPP_E164_DEFAULT}?text=Hi! I have a question.`}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-2 bg-green-500 text-white px-8 py-3 hover:bg-green-600 transition-colors"

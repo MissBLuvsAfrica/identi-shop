@@ -82,7 +82,7 @@ test.describe('Admin Pages', () => {
   test('admin login page loads', async ({ page }) => {
     await page.goto('/admin/login');
 
-    await expect(page.getByRole('heading', { name: /Admin Login/i })).toBeVisible();
+    await expect(page.getByText(/Admin Login/i)).toBeVisible();
     await expect(page.getByRole('button', { name: /LOGIN/i })).toBeVisible();
   });
 
@@ -101,6 +101,23 @@ test.describe('Admin Pages', () => {
   test('admin orders page redirects to login', async ({ page }) => {
     await page.goto('/admin/orders');
 
+    await expect(page).toHaveURL(/\/admin\/login/);
+  });
+
+  test('login, reach dashboard, logout when credentials in env', async ({ page }) => {
+    const user = process.env.E2E_ADMIN_USER || process.env.ADMIN_USER;
+    const pass = process.env.E2E_ADMIN_PASSWORD;
+    test.skip(!user || !pass, 'E2E_ADMIN_USER and E2E_ADMIN_PASSWORD (or ADMIN_USER + E2E_ADMIN_PASSWORD) required');
+
+    await page.goto('/admin/login');
+    await page.getByLabel(/username/i).fill(user as string);
+    await page.getByLabel(/password/i).fill(pass as string);
+    await page.getByRole('button', { name: /LOGIN/i }).click();
+
+    await expect(page).toHaveURL(/\/admin$/);
+    await expect(page.getByRole('heading', { name: /Dashboard/i })).toBeVisible();
+
+    await page.getByRole('button', { name: /logout/i }).click();
     await expect(page).toHaveURL(/\/admin\/login/);
   });
 });

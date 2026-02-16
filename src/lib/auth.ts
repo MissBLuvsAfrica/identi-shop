@@ -2,9 +2,12 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 import type { AdminSession } from '@/types';
-
-const SESSION_COOKIE_NAME = 'identi_admin_session';
-const SESSION_MAX_AGE = 60 * 60 * 24; // 24 hours
+import {
+  encodeSession,
+  getAdminSession as getAdminSessionFromCookie,
+  SESSION_COOKIE_NAME,
+  SESSION_MAX_AGE,
+} from '@/lib/adminAuth';
 
 // Logging helper
 function logAuth(operation: string, details?: Record<string, unknown>) {
@@ -45,19 +48,14 @@ export async function verifyAdminCredentials(
 }
 
 /**
- * Create admin session
+ * Create admin session (signed cookie via adminAuth)
  */
 export async function createAdminSession(username: string): Promise<void> {
   const cookieStore = await cookies();
+  const session: AdminSession = { isAuthenticated: true, username };
+  const token = await encodeSession(session);
 
-  const session: AdminSession = {
-    isAuthenticated: true,
-    username,
-  };
-
-  const sessionData = Buffer.from(JSON.stringify(session)).toString('base64');
-
-  cookieStore.set(SESSION_COOKIE_NAME, sessionData, {
+  cookieStore.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
@@ -69,29 +67,10 @@ export async function createAdminSession(username: string): Promise<void> {
 }
 
 /**
- * Get admin session
+ * Get admin session (validates signed cookie)
  */
 export async function getAdminSession(): Promise<AdminSession | null> {
-  const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME);
-
-  if (!sessionCookie?.value) {
-    return null;
-  }
-
-  try {
-    const sessionData = Buffer.from(sessionCookie.value, 'base64').toString('utf-8');
-    const session = JSON.parse(sessionData) as AdminSession;
-
-    if (!session.isAuthenticated) {
-      return null;
-    }
-
-    return session;
-  } catch {
-    logAuth('getSession:parseError');
-    return null;
-  }
+  return getAdminSessionFromCookie();
 }
 
 /**

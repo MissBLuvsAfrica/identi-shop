@@ -1,4 +1,5 @@
 import { SITE_NAME, RETURNS_POLICY, CONTACT_INFO } from '@/lib/constants';
+import { WHATSAPP_E164_DEFAULT } from '@/config/contact';
 
 export const metadata = {
   title: 'Returns & Exchanges',
@@ -114,7 +115,7 @@ export default function ReturnsPage() {
             <p>Phone: {CONTACT_INFO.phone}</p>
           </div>
           <a
-            href={`https://wa.me/${process.env.WHATSAPP_E164 || '254700000000'}?text=Hi! I have a question about your exchange policy.`}
+            href={`https://wa.me/${process.env.WHATSAPP_E164 || WHATSAPP_E164_DEFAULT}?text=Hi! I have a question about your exchange policy.`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 bg-green-500 text-white px-8 py-3 hover:bg-green-600 transition-colors"

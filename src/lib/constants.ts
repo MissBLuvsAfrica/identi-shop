@@ -53,19 +53,27 @@ export const RETURNS_POLICY = {
   ],
 };
 
-// Contact Information
+// Contact Information (from config/contact.ts)
+import {
+  CONTACT_INFO_DEFAULTS,
+  SOCIAL_LINKS_DEFAULTS,
+  CONTACT_LINKS,
+} from '@/config/contact';
+
 export const CONTACT_INFO = {
-  email: 'hello@identi.co.ke',
-  phone: '+254 700 000 000',
-  address: 'Nairobi, Kenya',
-  hours: 'Mon-Fri: 9am - 6pm EAT',
+  email: CONTACT_INFO_DEFAULTS.email,
+  phone: CONTACT_INFO_DEFAULTS.phone,
+  phoneE164: CONTACT_INFO_DEFAULTS.phoneE164,
+  address: CONTACT_INFO_DEFAULTS.address,
+  hours: CONTACT_INFO_DEFAULTS.hours,
 };
 
-// Social Links
+export { CONTACT_LINKS };
+
+// Social Links (Instagram, TikTok)
 export const SOCIAL_LINKS = {
-  instagram: 'https://instagram.com/identi',
-  facebook: 'https://facebook.com/identi',
-  twitter: 'https://twitter.com/identi',
+  instagram: SOCIAL_LINKS_DEFAULTS.instagram,
+  tiktok: SOCIAL_LINKS_DEFAULTS.tiktok,
 };
 
 // Navigation Links

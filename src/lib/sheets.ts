@@ -20,7 +20,10 @@ const SHEETS = {
   DELIVERY_FEES: 'delivery_fees',
   ORDERS: 'orders',
   ORDER_ITEMS: 'order_items',
+  SETTINGS: 'settings',
 } as const;
+
+export type SettingRow = { key: string; value: string; updated_at: string };
 
 // Initialize Google Sheets client
 function getGoogleSheetsClient(): sheets_v4.Sheets {
@@ -308,6 +311,115 @@ export async function getDeliveryLocationByKey(
 ): Promise<DeliveryLocation | null> {
   const locations = await getDeliveryLocations();
   return locations.find((l) => l.locationKey === locationKey) || null;
+}
+
+// Delivery fee write operations
+function deliveryLocationToRow(loc: DeliveryLocation): string[] {
+  return [loc.locationKey, loc.label, loc.feeKes.toString(), loc.etaDays];
+}
+
+export async function upsertDeliveryLocation(
+  location: DeliveryLocation
+): Promise<DeliveryLocation> {
+  const sheets = getGoogleSheetsClient();
+  const spreadsheetId = getSpreadsheetId();
+  const locations = await getDeliveryLocations();
+  const rowIndex = locations.findIndex((l) => l.locationKey === location.locationKey);
+
+  logOperation('upsertDeliveryLocation', { locationKey: location.locationKey });
+
+  if (rowIndex === -1) {
+    await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: `${SHEETS.DELIVERY_FEES}!A:D`,
+      valueInputOption: 'RAW',
+      requestBody: {
+        values: [deliveryLocationToRow(location)],
+      },
+    });
+  } else {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${SHEETS.DELIVERY_FEES}!A${rowIndex + 2}:D${rowIndex + 2}`,
+      valueInputOption: 'RAW',
+      requestBody: {
+        values: [deliveryLocationToRow(location)],
+      },
+    });
+  }
+  return location;
+}
+
+export async function deleteDeliveryLocation(locationKey: string): Promise<boolean> {
+  const sheets = getGoogleSheetsClient();
+  const spreadsheetId = getSpreadsheetId();
+  const locations = await getDeliveryLocations();
+  const filtered = locations.filter((l) => l.locationKey !== locationKey);
+  if (filtered.length === locations.length) {
+    logOperation('deleteDeliveryLocation:notFound', { locationKey });
+    return false;
+  }
+
+  logOperation('deleteDeliveryLocation', { locationKey });
+
+  const rows = filtered.map(deliveryLocationToRow);
+  await sheets.spreadsheets.values.clear({ spreadsheetId, range: `${SHEETS.DELIVERY_FEES}!A2:D` });
+  if (rows.length > 0) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${SHEETS.DELIVERY_FEES}!A2:D${rows.length + 1}`,
+      valueInputOption: 'RAW',
+      requestBody: { values: rows },
+    });
+  }
+  return true;
+}
+
+// Settings (key/value) - tab columns: key, value, updated_at
+export async function getSettingsRows(): Promise<SettingRow[]> {
+  const sheets = getGoogleSheetsClient();
+  const spreadsheetId = getSpreadsheetId();
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `${SHEETS.SETTINGS}!A2:C`,
+    });
+    const rows = (response.data.values || []) as string[][];
+    return rows.map((r) => ({
+      key: r[0] || '',
+      value: r[1] || '',
+      updated_at: r[2] || '',
+    }));
+  } catch (error) {
+    logOperation('getSettingsRows:error', { error: String(error) });
+    return [];
+  }
+}
+
+export async function setSettingRow(key: string, value: string): Promise<void> {
+  const sheets = getGoogleSheetsClient();
+  const spreadsheetId = getSpreadsheetId();
+  const now = new Date().toISOString();
+  const rows = await getSettingsRows();
+  const index = rows.findIndex((r) => r.key === key);
+
+  logOperation('setSettingRow', { key });
+
+  if (index === -1) {
+    await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: `${SHEETS.SETTINGS}!A:C`,
+      valueInputOption: 'RAW',
+      requestBody: { values: [[key, value, now]] },
+    });
+  } else {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${SHEETS.SETTINGS}!A${index + 2}:C${index + 2}`,
+      valueInputOption: 'RAW',
+      requestBody: { values: [[key, value, now]] },
+    });
+  }
 }
 
 // Write operations

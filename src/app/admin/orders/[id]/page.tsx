@@ -32,7 +32,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     notFound();
   }
 
-  const whatsappPhone = process.env.WHATSAPP_E164 || '254700000000';
+  const whatsappPhone = process.env.WHATSAPP_E164 || '254716610156';
   const whatsappLink = generateWhatsAppLink(
     whatsappPhone,
     `Hi! Regarding order ${order.orderNumber}...`

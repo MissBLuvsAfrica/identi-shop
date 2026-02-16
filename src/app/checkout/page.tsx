@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getCart } from '@/lib/cart';
 import { getDeliveryLocations } from '@/lib/sheets';
 import { formatPrice } from '@/lib/utils';
+import { WHATSAPP_E164_DEFAULT } from '@/config/contact';
 import { CheckoutForm } from './CheckoutForm';
 
 export const metadata = {
@@ -29,6 +30,7 @@ export default async function CheckoutPage() {
           <CheckoutForm
             deliveryLocations={deliveryLocations}
             cartSubtotal={cart.subtotal}
+            whatsappE164={process.env.WHATSAPP_E164 || WHATSAPP_E164_DEFAULT}
           />
         </div>
 

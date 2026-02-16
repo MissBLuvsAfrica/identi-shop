@@ -11,9 +11,10 @@ import { PAYMENT_METHODS, RETURNS_POLICY } from '@/lib/constants';
 interface CheckoutFormProps {
   deliveryLocations: DeliveryLocation[];
   cartSubtotal: number;
+  whatsappE164: string;
 }
 
-export function CheckoutForm({ deliveryLocations, cartSubtotal }: CheckoutFormProps) {
+export function CheckoutForm({ deliveryLocations, cartSubtotal, whatsappE164 }: CheckoutFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -83,7 +84,7 @@ export function CheckoutForm({ deliveryLocations, cartSubtotal }: CheckoutFormPr
       }
 
       // Open WhatsApp
-      const phone = process.env.NEXT_PUBLIC_WHATSAPP_E164 || '254700000000';
+      const phone = whatsappE164.replace(/^\+/, '');
       const message = decodeURIComponent(result.data?.whatsappPrefill || '');
       window.open(generateWhatsAppLink(phone, message), '_blank');
 

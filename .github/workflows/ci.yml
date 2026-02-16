@@ -68,9 +68,10 @@ jobs:
       # Dummy env vars for build
       GOOGLE_SERVICE_ACCOUNT_JSON_BASE64: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64 || 'eyJ0eXBlIjoic2VydmljZV9hY2NvdW50In0=' }}
       GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID || 'dummy-sheet-id' }}
-      WHATSAPP_E164: '254700000000'
+      WHATSAPP_E164: '254716610156'
       ADMIN_USER: 'admin'
       ADMIN_PASS_HASH: '$2a$12$dummy.hash.for.ci.testing'
+      ADMIN_SESSION_SECRET: 'ci-dummy-secret-at-least-32-characters-long'
       FLW_PUBLIC_KEY: 'FLWPUBK-dummy'
       FLW_SECRET_KEY: 'FLWSECK-dummy'
       APP_BASE_URL: 'http://localhost:3000'
@@ -107,9 +108,10 @@ jobs:
     env:
       GOOGLE_SERVICE_ACCOUNT_JSON_BASE64: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON_BASE64 || 'eyJ0eXBlIjoic2VydmljZV9hY2NvdW50In0=' }}
       GOOGLE_SHEETS_ID: ${{ secrets.GOOGLE_SHEETS_ID || 'dummy-sheet-id' }}
-      WHATSAPP_E164: '254700000000'
+      WHATSAPP_E164: '254716610156'
       ADMIN_USER: 'admin'
       ADMIN_PASS_HASH: '$2a$12$dummy.hash.for.ci.testing'
+      ADMIN_SESSION_SECRET: 'ci-dummy-secret-at-least-32-characters-long'
       FLW_PUBLIC_KEY: 'FLWPUBK-dummy'
       FLW_SECRET_KEY: 'FLWSECK-dummy'
       APP_BASE_URL: 'http://localhost:3000'
