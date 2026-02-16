@@ -3,15 +3,18 @@
 import { generateWhatsAppLink } from '@/lib/utils';
 
 interface WhatsAppButtonProps {
-  phone: string;
+  phone?: string | null;
   message?: string;
 }
+
+const DEFAULT_WHATSAPP = '254716610156';
 
 export function WhatsAppButton({
   phone,
   message = 'Hi! I have a question about your products.',
 }: WhatsAppButtonProps) {
-  const link = generateWhatsAppLink(phone, message);
+  const p = (phone && String(phone).trim()) || DEFAULT_WHATSAPP;
+  const link = generateWhatsAppLink(p, message);
 
   return (
     <a

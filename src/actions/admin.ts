@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import {
-  verifyAdminCredentials,
+  verifyAdminCredentialsWithReason,
   createAdminSession,
   destroyAdminSession,
   isAdminAuthenticated,
@@ -62,11 +62,22 @@ export async function adminLoginAction(
 
     const validated = adminLoginSchema.parse(data);
 
-    const isValid = await verifyAdminCredentials(validated.username, validated.password);
+    const result = await verifyAdminCredentialsWithReason(
+      validated.username,
+      validated.password
+    );
 
-    if (!isValid) {
-      logAdmin('login:failed', { username: validated.username });
-      return { success: false, error: 'Invalid credentials' };
+    if (!result.ok) {
+      logAdmin('login:failed', { username: validated.username, reason: result.reason });
+      const debug = process.env.ADMIN_LOGIN_DEBUG === 'true';
+      const message = debug
+        ? result.reason === 'missing_env'
+          ? 'Invalid credentials: ADMIN_USER or ADMIN_PASS_HASH not set in environment.'
+          : result.reason === 'username'
+            ? 'Invalid credentials: username does not match.'
+            : 'Invalid credentials: password is incorrect.'
+        : 'Invalid credentials';
+      return { success: false, error: message };
     }
 
     await createAdminSession(validated.username);

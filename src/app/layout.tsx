@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Header, Footer, WhatsAppButton } from '@/components/layout';
 import { getCartItemCount } from '@/lib/cart';
-import { getResolvedContact } from '@/lib/settings';
+import { getResolvedContact, type ResolvedContact } from '@/lib/settings';
+import { CONTACT_INFO_DEFAULTS, CONTACT_LINKS } from '@/config/contact';
 import { SITE_NAME, SITE_DESCRIPTION } from '@/lib/constants';
 import './globals.css';
 
@@ -34,15 +35,35 @@ export const metadata: Metadata = {
   },
 };
 
+const FALLBACK_CONTACT: ResolvedContact = {
+  email: CONTACT_INFO_DEFAULTS.email,
+  phone: CONTACT_INFO_DEFAULTS.phone,
+  phoneE164: CONTACT_INFO_DEFAULTS.phoneE164,
+  address: CONTACT_INFO_DEFAULTS.address,
+  hours: CONTACT_INFO_DEFAULTS.hours,
+  instagramUrl: CONTACT_LINKS.instagram,
+  tiktokUrl: CONTACT_LINKS.tiktok,
+  whatsappE164: CONTACT_INFO_DEFAULTS.phoneE164.replace(/^\+/, ''),
+};
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [cartItemCount, contact] = await Promise.all([
-    getCartItemCount(),
-    getResolvedContact(),
-  ]);
+  let cartItemCount = 0;
+  let contact: ResolvedContact = FALLBACK_CONTACT;
+
+  try {
+    const [cart, resolved] = await Promise.all([
+      getCartItemCount(),
+      getResolvedContact(),
+    ]);
+    cartItemCount = cart;
+    contact = resolved;
+  } catch (err) {
+    console.error('Layout data failed, using fallbacks:', err);
+  }
 
   return (
     <html lang="en">

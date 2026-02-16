@@ -1,14 +1,27 @@
 import Link from 'next/link';
 import { SITE_NAME, FOOTER_LINKS } from '@/lib/constants';
+import { CONTACT_INFO_DEFAULTS, CONTACT_LINKS } from '@/config/contact';
 import type { ResolvedContact } from '@/lib/settings';
 
 interface FooterProps {
-  contact: ResolvedContact;
+  contact?: ResolvedContact | null;
 }
 
+const DEFAULT_CONTACT: ResolvedContact = {
+  email: CONTACT_INFO_DEFAULTS.email,
+  phone: CONTACT_INFO_DEFAULTS.phone,
+  phoneE164: CONTACT_INFO_DEFAULTS.phoneE164,
+  address: CONTACT_INFO_DEFAULTS.address,
+  hours: CONTACT_INFO_DEFAULTS.hours,
+  instagramUrl: CONTACT_LINKS.instagram,
+  tiktokUrl: CONTACT_LINKS.tiktok,
+  whatsappE164: CONTACT_INFO_DEFAULTS.phoneE164.replace(/^\+/, ''),
+};
+
 export function Footer({ contact }: FooterProps) {
-  const mailto = `mailto:${contact.email}`;
-  const tel = `tel:${contact.phoneE164}`;
+  const c = contact ?? DEFAULT_CONTACT;
+  const mailto = `mailto:${c.email}`;
+  const tel = `tel:${c.phoneE164}`;
 
   return (
     <footer className="bg-black text-white">
@@ -60,15 +73,15 @@ export function Footer({ contact }: FooterProps) {
           <div className="col-span-2 md:col-span-1">
             <h3 className="text-xs sm:text-sm font-medium tracking-wide mb-3 sm:mb-4">CONTACT</h3>
             <ul className="space-y-2 sm:space-y-3 text-gray-400 text-xs sm:text-sm">
-              <li><a href={mailto} className="hover:text-white touch-manipulation">{contact.email}</a></li>
-              <li><a href={tel} className="hover:text-white touch-manipulation">{contact.phone}</a></li>
-              <li>{contact.address}</li>
+              <li><a href={mailto} className="hover:text-white touch-manipulation">{c.email}</a></li>
+              <li><a href={tel} className="hover:text-white touch-manipulation">{c.phone}</a></li>
+              <li>{c.address}</li>
             </ul>
 
             {/* Social Links */}
             <div className="flex space-x-2 mt-4 sm:mt-6">
               <a
-                href={contact.instagramUrl}
+                href={c.instagramUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white active:text-white transition-colors p-2 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"
@@ -79,7 +92,7 @@ export function Footer({ contact }: FooterProps) {
                 </svg>
               </a>
               <a
-                href={contact.tiktokUrl}
+                href={c.tiktokUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-white active:text-white transition-colors p-2 touch-manipulation min-w-[44px] min-h-[44px] flex items-center justify-center"

@@ -28,6 +28,15 @@ Replace `YOUR_PASSWORD_HERE` with your real password. Copy the printed hash into
 - **Username:** whatever you set for `ADMIN_USER` (e.g. `admin`)
 - **Password:** the password you used when generating the hash above
 
+### If you see "Invalid credentials"
+
+1. In Vercel, set **ADMIN_LOGIN_DEBUG** = `true` (Environment Variables), then **Redeploy**.
+2. Try logging in again. The message will tell you:
+   - **"ADMIN_USER or ADMIN_PASS_HASH not set"** → Add or fix those vars in Vercel and redeploy.
+   - **"username does not match"** → Set **ADMIN_USER** to exactly what you type in the Username field (e.g. `hello@identionline.com`), no extra spaces.
+   - **"password is incorrect"** → Generate a new **ADMIN_PASS_HASH** with the command above using the **exact** password you type, paste it into Vercel (no newline), and redeploy.
+3. Remove **ADMIN_LOGIN_DEBUG** or set it to `false` after fixing.
+
 ### Generate ADMIN_SESSION_SECRET
 
 Run:

@@ -21,31 +21,44 @@ function logAuth(operation: string, details?: Record<string, unknown>) {
   );
 }
 
+export type VerifyCredentialsResult =
+  | { ok: true }
+  | { ok: false; reason: 'missing_env' | 'username' | 'password' };
+
 /**
- * Verify admin credentials
+ * Verify admin credentials. When ADMIN_LOGIN_DEBUG=true, returns reason for failure.
  */
 export async function verifyAdminCredentials(
   username: string,
   password: string
 ): Promise<boolean> {
+  const result = await verifyAdminCredentialsWithReason(username, password);
+  return result.ok;
+}
+
+export async function verifyAdminCredentialsWithReason(
+  username: string,
+  password: string
+): Promise<VerifyCredentialsResult> {
   const adminUser = process.env.ADMIN_USER?.trim();
   const adminPassHash = process.env.ADMIN_PASS_HASH?.trim();
 
   if (!adminUser || !adminPassHash) {
     logAuth('verifyCredentials:missingEnvVars');
-    return false;
+    return { ok: false, reason: 'missing_env' };
   }
 
   const usernameNorm = username.trim();
   if (usernameNorm !== adminUser) {
     logAuth('verifyCredentials:invalidUsername', { username: usernameNorm });
-    return false;
+    return { ok: false, reason: 'username' };
   }
 
   const isValid = await bcrypt.compare(password, adminPassHash);
   logAuth('verifyCredentials', { username: usernameNorm, valid: isValid });
+  if (!isValid) return { ok: false, reason: 'password' };
 
-  return isValid;
+  return { ok: true };
 }
 
 /**
