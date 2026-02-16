@@ -28,21 +28,22 @@ export async function verifyAdminCredentials(
   username: string,
   password: string
 ): Promise<boolean> {
-  const adminUser = process.env.ADMIN_USER;
-  const adminPassHash = process.env.ADMIN_PASS_HASH;
+  const adminUser = process.env.ADMIN_USER?.trim();
+  const adminPassHash = process.env.ADMIN_PASS_HASH?.trim();
 
   if (!adminUser || !adminPassHash) {
     logAuth('verifyCredentials:missingEnvVars');
     return false;
   }
 
-  if (username !== adminUser) {
-    logAuth('verifyCredentials:invalidUsername', { username });
+  const usernameNorm = username.trim();
+  if (usernameNorm !== adminUser) {
+    logAuth('verifyCredentials:invalidUsername', { username: usernameNorm });
     return false;
   }
 
   const isValid = await bcrypt.compare(password, adminPassHash);
-  logAuth('verifyCredentials', { username, valid: isValid });
+  logAuth('verifyCredentials', { username: usernameNorm, valid: isValid });
 
   return isValid;
 }
